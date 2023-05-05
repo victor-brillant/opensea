@@ -34,6 +34,10 @@
   overflow-x: hidden;
 }
 
+.limite1-lign {
+  -webkit-line-clamp: 1;
+}
+
 .limite2-lign {
   -webkit-line-clamp: 2;
 }
