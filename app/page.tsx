@@ -1,9 +1,19 @@
+"use client"; // this is a client component
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
+import { useState,useEffect } from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const [nfts, setNfts] = useState([]);
+  useEffect(() => {
+    fetch('https://eth-mainnet.g.alchemy.com/v2/XyiOijMVoy42To3frN6_SDrXPzcQ0EaC/getNFTs/?owner=vitalik.eth&offset=0&limit=10')
+      .then(response => response.json())
+      .then(data => setNfts(data.ownedNfts)
+      )
+      .catch(error => console.error(error));
+  }, []);
   return (
     <main className="flex-col items-center justify-between min-h-screen pt-24 bg-white">
       <section className="bg-white dark:bg-gray-900">
@@ -20,28 +30,72 @@ export default function Home() {
                 </div>
             </div> 
             <div className="grid gap-4 mb-6 md:grid-cols-5">
-            {[0,4,2,3,4,5,6,6,6,6].map(_=>
-              <div className="items-center rounded-lg shadow item-nps bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                <a href="#">
-                    <img  className="w-full rounded-lg rounded-b-none round" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="Bonnie Avatar"/>
-                </a>
-                <div className="p-5 block-details">
-                    <p className="font-bold tracking-tight text-gray-900 dark:text-white">
-                      20 Mint Typewriter #730
-                    </p>
-                    <p className="mt-3 font-bold tracking-tight text-gray-900 dark:text-white">
-                      0,055 ETH
-                    </p>
-                </div>
-                <div className='flex align-center'>
-                  <a href="#" className="text-white bouton-buy text-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg rounded-t-none rounded-r-none text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 w-full block left-btn">Buy now
-                  </a>
-                  <a href="#" className="text-white bouton-buy text-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg rounded-t-none rounded-l-none text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                    <img src="/chopping_cart.svg" alt="" />
-                  </a>
-                </div>
-            </div>  
-            )
+            {nfts.length===0?
+              <>
+                {[0,1,2,3,5,6,7,8,9,10].map
+                (
+                  (item) => (
+                    <div key={item} className="items-center rounded-lg shadow item-nft item-nps bg-gray-50 dark:bg-gray-800 dark:border-gray-700 movie--isloading">
+                      <div className='w-full'>
+                        <a className='lien-img loading-image' href="#">
+                        </a>
+                        <div className="p-5 block-details">
+                        <div className="loading-content">
+                          <div className="loading-text-container">
+                            <div className="loading-main-text"></div>
+                            <div className="loading-sub-text"></div>
+                          </div>
+                        </div>
+                        <div className="mt-3 loading-content">
+                          <div className="loading-text-container">
+                            <div className="loading-main-text"></div>
+                            <div className="loading-sub-text"></div>
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+                      <div className='flex w-full align-center'>
+                        <a href="#" className="text-white bouton-buy text-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg rounded-t-none rounded-r-none text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 w-full block left-btn">...
+                        </a>
+                        <a href="#" className="text-white bouton-buy text-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg rounded-t-none rounded-l-none text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                          <img src="/chopping_cart.svg" alt="" />
+                        </a>
+                      </div>
+                    </div>  
+                  )
+                )
+              }
+              </>
+              :
+              <>
+              {nfts.map
+                (
+                  (item) => (
+                    <div key={item} className="items-center rounded-lg shadow item-nft item-nps bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                      <div className='w-full'>
+                        <a className='lien-img' href="#">
+                            <img  className="w-full rounded-lg rounded-b-none round" src={item.contractMetadata?.openSea?.imageUrl} alt={item.contractMetadata?.name}/>
+                        </a>
+                        <div className="p-5 block-details">
+                            <p className="font-bold tracking-tight text-gray-900 dark:text-white limite2-lign">
+                            {item.contractMetadata?.name} #{item?.balance}
+                            </p>
+                            <p className="mt-3 font-bold tracking-tight text-gray-900 dark:text-white limite3-lign">
+                            {item.contractMetadata?.openSea?.description}
+                            </p>
+                        </div>
+                      </div>
+                      <div className='flex w-full align-center'>
+                        <a href="#" className="text-white bouton-buy text-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg rounded-t-none rounded-r-none text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 w-full block left-btn">Buy now
+                        </a>
+                        <a href="#" className="text-white bouton-buy text-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg rounded-t-none rounded-l-none text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                          <img src="/chopping_cart.svg" alt="" />
+                        </a>
+                      </div>
+                    </div>  
+                  )
+                )
+              }</>
             }
             </div>  
         </div>
